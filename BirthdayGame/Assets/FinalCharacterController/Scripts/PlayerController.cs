@@ -19,7 +19,9 @@ namespace BirthdayGame.FinalCharacterController
         public float lookSenseH = 0.1f;
         public float lookSenseV = 0.1f;
         public float lookLimitV = 89f;
-
+        public TypewriterText typewriterText;
+        public float pickupRadius = 1.5f;
+        
         private PlayerLocomotionInput playerLocomotionInput;
         private Vector2 cameraRotation = Vector2.zero;
         private Vector2 playerTargetRotation = Vector2.zero;
@@ -34,9 +36,26 @@ namespace BirthdayGame.FinalCharacterController
 
         private void Update()
         {
+            CheckForCollectibles();
             UpdateMovement();
             UpdateJump();
             UpdateAnimator();
+        }
+
+        private void CheckForCollectibles()
+        {
+            Collider[] hits = Physics.OverlapSphere(transform.position, pickupRadius);
+            foreach (Collider col in hits)
+            {
+                CollectibleItem item = col.GetComponent<CollectibleItem>();
+                if (item != null)
+                {
+                    Debug.Log("Picked up: " + item.gameObject.name);
+                    typewriterText.ShowText(item.text);
+                    Destroy(item.gameObject);
+                    break;
+                }
+            }
         }
 
         private void UpdateMovement()
